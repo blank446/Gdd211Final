@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Movement : MonoBehaviour
 {
@@ -10,6 +11,11 @@ public class Movement : MonoBehaviour
     private Vector2 movement;
     private Rigidbody2D rb;
     private bool isGrounded = false;
+    [Tooltip("The player's health")]
+    [SerializeField] public float PlayerHealth = 10f;
+    [Tooltip("Projectile prefab")]
+    [SerializeField] private GameObject projectilePrefab;
+    private bool facingRight = true;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -17,7 +23,38 @@ public class Movement : MonoBehaviour
     void Update()
     {
         movement.x = Input.GetAxisRaw("Horizontal");
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            facingRight = false;
+        }
+        else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            facingRight = true;
+        }
         movement.Normalize();
+        if (PlayerHealth <= 0)
+        {
+          // Handle player death
+          SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        //instantiate a projectile when the player presses f in the direction they're facing
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+            Rigidbody2D projectileRb = projectile.GetComponent<Rigidbody2D>();
+
+            Collider2D projectileCol = projectile.GetComponent<Collider2D>();
+            Collider2D playerCol = GetComponent<Collider2D>();
+            Physics2D.IgnoreCollision(projectileCol, playerCol);
+            if (facingRight)
+            {
+                projectileRb.linearVelocity = new Vector2(10f, 0f);
+            }
+            else if (facingRight == false)
+            {
+                projectileRb.linearVelocity = new Vector2(-10f, 0f);
+            }
+        }
     }
     void FixedUpdate()
     {
@@ -26,7 +63,6 @@ public class Movement : MonoBehaviour
         //player jump
         if (Input.GetKey(KeyCode.Space) && isGrounded)
         {
-            Debug.Log("Jump");
             rb.AddForce(Vector2.up * Playerjump, ForceMode2D.Impulse);
             isGrounded = false;
         }
