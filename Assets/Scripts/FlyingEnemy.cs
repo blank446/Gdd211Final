@@ -18,8 +18,9 @@ public class FlyingEnemy : EnemyBaseClass
     {
         rb = GetComponent<Rigidbody2D>();
     }
-    private void Update()
+    protected override void Update()
     {
+        base.Update();
         //this bool detects if the enemy is below the minimum height or above the maximum height, and changes the direction of the enemy accordingly
         Vector2 minPos = new Vector2(rb.position.x, minHeight);
         Vector2 maxPos = new Vector2(rb.position.x, maxHeight);
