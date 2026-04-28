@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class Movement : MonoBehaviour
 {
+    [SerializeField] private Animator ani;
     [Header("Movement variables")]
     [Tooltip("Pretty obvious but just in case, controls how fast the player moves")]
     [SerializeField] private float Playerspeed = 5f;
