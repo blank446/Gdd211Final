@@ -1,6 +1,7 @@
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
+using TMPro;
 
 public class EnemyBaseClass : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class EnemyBaseClass : MonoBehaviour
     [Tooltip("How long the enemy is possessed")]
     [SerializeField] protected float controlTime = 5f;
     protected float controlTimer;
+    [Tooltip("Text element to display the remaining control time")]
+    public TMP_Text ControlLimit;
     
     protected void Start()
     {
@@ -23,12 +26,21 @@ public class EnemyBaseClass : MonoBehaviour
             possessed = true;
             TakeOver();
             Destroy(collision.gameObject);
+            ControlLimit.text = ("Possession time: ") + controlTimer.ToString();
         }
         if (collision.gameObject.CompareTag("Player"))
         {
             //Damage the player
             Debug.Log("Hit");
             collision.gameObject.GetComponent<Movement>().PlayerHealth -= damage;
+        }
+    }
+    protected virtual void Update()
+    {
+        if (possessed)
+        {
+            ControlLimit.SetText(("Possession time: ") + controlTimer.ToString("F2"));
+            controlTimer -= Time.deltaTime;
         }
     }
     public virtual void TakeOver()
